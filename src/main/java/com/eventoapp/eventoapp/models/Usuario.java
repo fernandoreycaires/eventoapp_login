@@ -3,9 +3,9 @@ package com.eventoapp.eventoapp.models;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.Collection;
+import java.util.List;
 
 @Entity
 public class Usuario implements UserDetails{
@@ -16,6 +16,15 @@ public class Usuario implements UserDetails{
     private String nomeCompleto;
 
     private String senha;
+
+    @ManyToMany
+    @JoinTable(
+            name = "usuarios_roles",
+            joinColumns = @JoinColumn(
+                    name = "usuario_id", referencedColumnName = "login"),
+            inverseJoinColumns = @JoinColumn(
+                    name = "role_id", referencedColumnName = "nomeRole"))
+    private List<Role> roles;
 
     public String getLogin() {
         return login;
@@ -41,9 +50,18 @@ public class Usuario implements UserDetails{
         this.senha = senha;
     }
 
+    public List<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<Role> roles) {
+        this.roles = roles;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+
+        return (Collection<? extends GrantedAuthority>) this.roles;
     }
 
     @Override
